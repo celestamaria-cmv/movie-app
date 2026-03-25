@@ -1,30 +1,26 @@
+import { useEffect, useState } from "react";
+import { fetchMovies } from "./services/movieService";
 import type { Movie } from "./types/movie";
 
-const movies: Movie[] = [
-  {
-    id: 1,
-    title: "Inception",
-    poster_path: "",
-    release_date: "2010",
-    vote_average: 8.8,
-  },
-  {
-    id: 2,
-    title: "Interstellar",
-    poster_path: "",
-    release_date: "2014",
-    vote_average: 8.6,
-  },
-];
-
 function App() {
+  const [movies, setMovies] = useState<Movie[]>([]);
+
+  useEffect(() => {
+    const getMovies = async () => {
+      const data = await fetchMovies();
+      setMovies(data);
+    };
+
+    getMovies();
+  }, []);
+
   return (
     <div>
       <h1>🎬 Movie App</h1>
 
-      {movies.map((movie) => {
-        return <p key={movie.id}>{movie.title}</p>;
-      })}
+      {movies.map((movie) => (
+        <p key={movie.id}>{movie.title}</p>
+      ))}
     </div>
   );
 }
