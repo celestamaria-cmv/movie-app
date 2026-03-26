@@ -1,4 +1,4 @@
-const API_KEY = "86928ee9a3d2f6a1e8e910d1686aa3a3";
+const API_KEY = import.meta.env.VITE_API_KEY;
 
 export const fetchMovies = async () => {
   const response = await fetch(
