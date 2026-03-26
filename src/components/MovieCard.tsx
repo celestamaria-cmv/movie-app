@@ -1,4 +1,5 @@
 import type { Movie } from "../types/movie";
+import "./MovieCard.css";
 
 type Props = {
   movie: Movie;
@@ -6,7 +7,7 @@ type Props = {
 
 function MovieCard({ movie }: Props) {
   return (
-    <div>
+    <div className="card">
       <img
         src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
         alt={movie.title}
