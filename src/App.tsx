@@ -3,6 +3,7 @@ import { fetchMovies } from "./services/movieService";
 import type { Movie } from "./types/movie";
 import MovieCard from "./components/MovieCard";
 import "./App.css";
+import Loader from "./components/Loader";
 
 function App() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -29,8 +30,8 @@ function App() {
       <h1 className="title">🎬 Movie App</h1>
 
       {/* Loading */}
-      {loading && <p>Loading movies...</p>}
-
+      {loading && <Loader />}
+      
       {/* Error */}
       {error && <p>{error}</p>}
 
