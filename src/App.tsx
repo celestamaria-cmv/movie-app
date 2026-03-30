@@ -35,6 +35,8 @@ function App() {
       {/* Error */}
       {error && <p>{error}</p>}
 
+      {!loading && movies.length === 0 && <p>No movies found</p>}
+
       {/* Movies */}
       <div className="movies-container">
         {movies.map((movie) => (
