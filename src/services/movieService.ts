@@ -19,3 +19,17 @@ export const fetchMovieDetails = async (id: string) => {
   const data = await response.json();
   return data;
 };
+
+export const fetchMovieTrailer = async (id: string) => {
+  const response = await fetch(
+    `https://api.themoviedb.org/3/movie/${id}/videos?api_key=${API_KEY}`
+  );
+
+  const data = await response.json();
+
+  const video = data.results.find(
+    (v: any) => v.site === "YouTube"
+  );
+
+  return video?.key;
+};
