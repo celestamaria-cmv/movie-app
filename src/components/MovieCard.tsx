@@ -4,9 +4,11 @@ import { Link } from "react-router-dom";
 
 type Props = {
   movie: Movie;
+  onAdd: (movie: Movie) => void;
+  onRemove?: (id: number) => void;
 };
 
-function MovieCard({ movie }: Props) {
+function MovieCard({ movie, onAdd, onRemove }: Props) {
   return (
     <Link to={`/movie/${movie.id}`} className="card">
       <img
@@ -17,6 +19,28 @@ function MovieCard({ movie }: Props) {
       <div className="card-content">
         <h3>{movie.title}</h3>
         <p>⭐ {movie.vote_average}</p>
+
+        {!onRemove && (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              onAdd(movie);
+            }}
+          >
+            ⭐ Add
+          </button>
+        )}
+
+        {onRemove && (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              onRemove(movie.id);
+            }}
+          >
+            ❌ Remove
+          </button>
+        )}
       </div>
     </Link>
   );
