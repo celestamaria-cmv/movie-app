@@ -12,7 +12,6 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
-  // 🔥 Initial load (popular movies)
   useEffect(() => {
     const getMovies = async () => {
       try {
@@ -28,14 +27,13 @@ function App() {
     getMovies();
   }, []);
 
-  // 🔍 Search function
   const handleSearch = async () => {
     if (!query) return;
 
     try {
       setLoading(true);
       setError(null);
-      setMovies([]); 
+      setMovies([]);
 
       const data = await fetchMovies(query);
       setMovies(data);
@@ -50,7 +48,6 @@ function App() {
     <div className="app">
       <h1 className="title">🎬 Movie App</h1>
 
-      {/* 🔍 Search */}
       <div style={{ textAlign: "center", marginBottom: "20px" }}>
         <input
           type="text"
@@ -58,30 +55,34 @@ function App() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
-                handleSearch();
-             }
-           }}
+            if (e.key === "Enter") handleSearch();
+          }}
         />
 
         <Button text="Search" onClick={handleSearch} />
       </div>
 
-      {/* ⏳ Loading */}
       {loading && <Loader />}
 
-      {/* ❌ Error */}
-      {error && <p>{error}</p>}
+      {error && (
+        <p style={{ color: "red", textAlign: "center" }}>
+          ❌ {error}
+        </p>
+      )}
 
-      {/* 📭 Empty */}
-      {!loading && movies.length === 0 && <p>No movies found</p>}
+      {!loading && movies.length === 0 && (
+        <p style={{ textAlign: "center" }}>
+          😕 No movies found
+        </p>
+      )}
 
-      {/* 🎬 Movies */}
-      <div className="movies-container">
-        {movies.map((movie) => (
-          <MovieCard key={movie.id} movie={movie} />
-        ))}
-      </div>
+      {!loading && (
+        <div className="movies-container">
+          {movies.map((movie) => (
+            <MovieCard key={movie.id} movie={movie} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
