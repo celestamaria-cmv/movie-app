@@ -35,3 +35,8 @@
   font-weight: 600;
   font-size: 14px;
 }
+a.card {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
