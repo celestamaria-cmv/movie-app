@@ -5,14 +5,16 @@ import MovieCard from "../components/MovieCard";
 import Loader from "../components/Loader";
 import Button from "../components/Button";
 import "../App.css";
+import { useWatchlist } from "../context/WatchlistContext";
 
 function Home() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
-  const [watchlist, setWatchlist] = useState<Movie[]>([]);
+  const { watchlist, toggleWatchlist } = useWatchlist();
 
+  
   useEffect(() => {
     const getMovies = async () => {
       try {
@@ -119,7 +121,7 @@ function Home() {
             <MovieCard
               key={movie.id}
               movie={movie}
-              onAdd={addToWatchlist}
+              onAdd={toggleWatchlist}
             />
           ))}
         </div>
