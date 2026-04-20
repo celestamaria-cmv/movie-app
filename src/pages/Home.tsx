@@ -12,9 +12,9 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
-  const { watchlist, toggleWatchlist } = useWatchlist();
 
-  
+  const { watchlist } = useWatchlist();
+
   useEffect(() => {
     const getMovies = async () => {
       try {
@@ -29,17 +29,6 @@ function Home() {
 
     getMovies();
   }, []);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("watchlist");
-    if (saved) {
-      setWatchlist(JSON.parse(saved));
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("watchlist", JSON.stringify(watchlist));
-  }, [watchlist]);
 
   const handleSearch = async () => {
     try {
@@ -56,14 +45,6 @@ function Home() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const addToWatchlist = (movie: Movie) => {
-    setWatchlist((prev) => [...prev, movie]);
-  };
-
-  const removeFromWatchlist = (id: number) => {
-    setWatchlist((prev) => prev.filter((m) => m.id !== id));
   };
 
   return (
@@ -86,16 +67,11 @@ function Home() {
 
       {watchlist.length > 0 && (
         <div style={{ margin: "20px" }}>
-          <h2>⭐ Watchlist</h2>
+          <h2 style={{ marginLeft: "10px" }}>⭐ Your Watchlist</h2>
 
           <div className="movies-container">
             {watchlist.map((movie) => (
-              <MovieCard
-                key={movie.id}
-                movie={movie}
-                onAdd={() => {}}
-                onRemove={removeFromWatchlist}
-              />
+              <MovieCard key={movie.id} movie={movie} />
             ))}
           </div>
         </div>
@@ -118,11 +94,7 @@ function Home() {
       {!loading && (
         <div className="movies-container">
           {movies.map((movie) => (
-            <MovieCard
-              key={movie.id}
-              movie={movie}
-              onAdd={toggleWatchlist}
-            />
+            <MovieCard key={movie.id} movie={movie} />
           ))}
         </div>
       )}

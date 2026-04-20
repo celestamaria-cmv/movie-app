@@ -47,14 +47,23 @@ function MovieDetails() {
       )}
 
       {showTrailer && trailerKey && (
-        <div style={{ marginTop: "20px" }}>
-          <iframe
-            width="560"
-            height="315"
-            src={`https://www.youtube.com/embed/${trailerKey}`}
-            title="YouTube video player"
-            allowFullScreen
-          ></iframe>
+        <div className="modal" onClick={() => setShowTrailer(false)}>
+          <div
+             className="modal-content"
+             onClick={(e) => e.stopPropagation()}
+            >
+            <span className="close" onClick={() => setShowTrailer(false)}>
+              ❌
+            </span>
+
+            <iframe
+              width="100%"
+              height="400"
+              src={`https://www.youtube.com/embed/${trailerKey}`}
+              title="Trailer"
+              allowFullScreen
+            ></iframe>
+          </div>
         </div>
       )}
     </div>

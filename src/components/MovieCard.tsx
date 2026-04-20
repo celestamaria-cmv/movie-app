@@ -1,14 +1,17 @@
 import type { Movie } from "../types/movie";
 import "./MovieCard.css";
 import { Link } from "react-router-dom";
+import { useWatchlist } from "../context/WatchlistContext";
 
 type Props = {
   movie: Movie;
-  onAdd: (movie: Movie) => void;
-  onRemove?: (id: number) => void;
 };
 
-function MovieCard({ movie, onAdd, onRemove }: Props) {
+function MovieCard({ movie }: Props) {
+  const { watchlist, toggleWatchlist } = useWatchlist();
+
+  const isInWatchlist = watchlist.some((m) => m.id === movie.id);
+
   return (
     <Link to={`/movie/${movie.id}`} className="card">
       <img
@@ -20,27 +23,15 @@ function MovieCard({ movie, onAdd, onRemove }: Props) {
         <h3>{movie.title}</h3>
         <p>⭐ {movie.vote_average}</p>
 
-        {!onRemove && (
-          <button
-            onClick={(e) => {
+        <button
+           className={isInWatchlist ? "remove-btn" : "add-btn"}
+           onClick={(e) => {
               e.preventDefault();
-              onAdd(movie);
-            }}
-          >
-            ⭐ Add
-          </button>
-        )}
-
-        {onRemove && (
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              onRemove(movie.id);
-            }}
-          >
-            ❌ Remove
-          </button>
-        )}
+              toggleWatchlist(movie);
+          }}
+         >
+           {isInWatchlist ? "✔ Added" : "+ Watchlist"}
+        </button>
       </div>
     </Link>
   );
