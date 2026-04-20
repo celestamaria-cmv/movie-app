@@ -14,14 +14,19 @@ function Home() {
   const [query, setQuery] = useState("");
   const [rating, setRating] = useState(0);
   const [genre, setGenre] = useState(0);
+  const [page, setPage] = useState(1);
 
   const { watchlist } = useWatchlist();
 
+  // 🔥 FETCH MOVIES (WITH PAGE)
   useEffect(() => {
     const getMovies = async () => {
       try {
-        const data = await fetchMovies();
-        setMovies(data);
+        const data = await fetchMovies(query, page);
+
+        setMovies((prev) =>
+          page === 1 ? data : [...prev, ...data]
+        );
       } catch {
         setError("Failed to fetch movies");
       } finally {
@@ -30,17 +35,34 @@ function Home() {
     };
 
     getMovies();
+  }, [page]);
+
+  // 🔥 SCROLL DETECTION
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 100
+      ) {
+        setPage((prev) => prev + 1);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // 🔍 SEARCH
   const handleSearch = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const data = query.trim()
-        ? await fetchMovies(query)
-        : await fetchMovies();
+      setPage(1);       // 🔥 reset page
+      setMovies([]);    // 🔥 clear old movies
 
+      const data = await fetchMovies(query, 1);
       setMovies(data);
     } catch {
       setError("Failed to search movies");
@@ -132,10 +154,11 @@ function Home() {
             .filter((movie) => {
               const ratingMatch = movie.vote_average >= rating;
               const genreMatch =
-                genre === 0 || movie.genre_ids?.includes(genre) === true;
+                genre === 0 ||
+                movie.genre_ids?.includes(genre);
 
               return ratingMatch && genreMatch;
-             })
+            })
             .map((movie) => (
               <MovieCard key={movie.id} movie={movie} />
             ))}
