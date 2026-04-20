@@ -13,6 +13,7 @@ function Home() {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [rating, setRating] = useState(0);
+  const [genre, setGenre] = useState(0);
 
   const { watchlist } = useWatchlist();
 
@@ -67,16 +68,30 @@ function Home() {
         <Button text="Search" onClick={handleSearch} />
       </div>
 
-      {/* ⭐ FILTER */}
+      {/* ⭐ FILTERS */}
       <div style={{ textAlign: "center", marginBottom: "20px" }}>
-        <label style={{ marginRight: "10px" }}>Filter by rating:</label>
+        <label style={{ marginRight: "10px" }}>Rating:</label>
 
-        <select onChange={(e) => setRating(Number(e.target.value))}>
+        <select
+          onChange={(e) => setRating(Number(e.target.value))}
+          style={{ marginRight: "20px" }}
+        >
           <option value={0}>All</option>
           <option value={5}>5+</option>
           <option value={6}>6+</option>
           <option value={7}>7+</option>
           <option value={8}>8+</option>
+        </select>
+
+        <label style={{ marginRight: "10px" }}>Genre:</label>
+
+        <select onChange={(e) => setGenre(Number(e.target.value))}>
+          <option value={0}>All</option>
+          <option value={28}>Action</option>
+          <option value={35}>Comedy</option>
+          <option value={18}>Drama</option>
+          <option value={27}>Horror</option>
+          <option value={10749}>Romance</option>
         </select>
       </div>
 
@@ -114,7 +129,13 @@ function Home() {
       {!loading && (
         <div className="movies-container">
           {movies
-            .filter((movie) => movie.vote_average >= rating)
+            .filter((movie) => {
+              const ratingMatch = movie.vote_average >= rating;
+              const genreMatch =
+                genre === 0 || movie.genre_ids?.includes(genre) === true;
+
+              return ratingMatch && genreMatch;
+             })
             .map((movie) => (
               <MovieCard key={movie.id} movie={movie} />
             ))}
