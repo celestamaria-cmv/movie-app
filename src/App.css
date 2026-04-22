@@ -9,22 +9,31 @@
 
 .title {
   text-align: center;
-  color: white;
-  margin-bottom: 30px;
-  font-size: 28px;
+  font-size: 2rem;
+}
+
+@media (max-width: 600px) {
+  .title {
+    font-size: 1.5rem;
+  }
 }
 
 .movies-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
-  width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  padding: 10px;
 }
+
 input {
-  padding: 8px;
-  margin-right: 10px;
-  border-radius: 5px;
-  border: none;
+  width: 60%;
+  padding: 10px;
+}
+
+@media (max-width: 600px) {
+  input {
+    width: 90%;
+  }
 }
 .modal {
   position: fixed;
