@@ -3,9 +3,9 @@ import { fetchMovies } from "../services/movieService";
 import type { Movie } from "../types/movie";
 import MovieCard from "../components/MovieCard";
 import Loader from "../components/Loader";
-import Button from "../components/Button";
 import "../App.css";
 import { useWatchlist } from "../context/WatchlistContext";
+import useDebounce from "../hooks/useDebounce";
 
 function Home() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -16,13 +16,33 @@ function Home() {
   const [genre, setGenre] = useState(0);
   const [page, setPage] = useState(1);
 
+  // 🌙 Dark mode state
+  const [darkMode, setDarkMode] = useState(false);
+
   const { watchlist } = useWatchlist();
 
-  // 🔥 FETCH MOVIES (WITH PAGE)
+  const debouncedQuery = useDebounce(query, 500);
+
+  // 🌙 Load theme from localStorage
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      setDarkMode(true);
+    }
+  }, []);
+
+  // 🌙 Save theme to localStorage
+  useEffect(() => {
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
+
+  // 🔥 Fetch movies
   useEffect(() => {
     const getMovies = async () => {
       try {
-        const data = await fetchMovies(query, page);
+        setLoading(true);
+
+        const data = await fetchMovies(debouncedQuery, page);
 
         setMovies((prev) =>
           page === 1 ? data : [...prev, ...data]
@@ -35,9 +55,9 @@ function Home() {
     };
 
     getMovies();
-  }, [page]);
+  }, [debouncedQuery, page]);
 
-  // 🔥 SCROLL DETECTION
+  // 🔥 Infinite scroll
   useEffect(() => {
     const handleScroll = () => {
       if (
@@ -49,31 +69,19 @@ function Home() {
     };
 
     window.addEventListener("scroll", handleScroll);
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 🔍 SEARCH
-  const handleSearch = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      setPage(1);       // 🔥 reset page
-      setMovies([]);    // 🔥 clear old movies
-
-      const data = await fetchMovies(query, 1);
-      setMovies(data);
-    } catch {
-      setError("Failed to search movies");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="app">
+    <div className={darkMode ? "app dark" : "app"}>
       <h1 className="title">🎬 Movie App</h1>
+
+      {/* 🌙 TOGGLE BUTTON */}
+      <div style={{ textAlign: "center", marginBottom: "20px" }}>
+        <button onClick={() => setDarkMode((prev) => !prev)}>
+          {darkMode ? "🌞 Light Mode" : "🌙 Dark Mode"}
+        </button>
+      </div>
 
       {/* 🔍 SEARCH */}
       <div style={{ textAlign: "center", marginBottom: "20px" }}>
@@ -81,13 +89,12 @@ function Home() {
           type="text"
           placeholder="Search movies..."
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleSearch();
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setPage(1);
+            setMovies([]);
           }}
         />
-
-        <Button text="Search" onClick={handleSearch} />
       </div>
 
       {/* ⭐ FILTERS */}

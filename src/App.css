@@ -51,3 +51,23 @@ input {
   cursor: pointer;
   float: right;
 }
+/* 🌙 Dark mode */
+.dark {
+  background-color: #121212;
+  color: white;
+}
+
+.dark .card {
+  background-color: #1e1e1e;
+}
+
+.dark input {
+  background-color: #222;
+  color: white;
+  border: 1px solid #444;
+}
+
+.dark select {
+  background-color: #222;
+  color: white;
+}
