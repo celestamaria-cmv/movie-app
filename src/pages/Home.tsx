@@ -6,6 +6,7 @@ import Loader from "../components/Loader";
 import "../App.css";
 import { useWatchlist } from "../context/WatchlistContext";
 import useDebounce from "../hooks/useDebounce";
+import { motion } from "framer-motion";
 
 function Home() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -15,28 +16,23 @@ function Home() {
   const [rating, setRating] = useState(0);
   const [genre, setGenre] = useState(0);
   const [page, setPage] = useState(1);
-
-  // 🌙 Dark mode state
   const [darkMode, setDarkMode] = useState(false);
 
   const { watchlist } = useWatchlist();
-
   const debouncedQuery = useDebounce(query, 500);
 
-  // 🌙 Load theme from localStorage
+  // 🌙 Load theme
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
-      setDarkMode(true);
-    }
+    if (savedTheme === "dark") setDarkMode(true);
   }, []);
 
-  // 🌙 Save theme to localStorage
+  // 🌙 Save theme
   useEffect(() => {
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
-  // 🔥 Fetch movies
+  // 🎬 Fetch movies
   useEffect(() => {
     const getMovies = async () => {
       try {
@@ -57,7 +53,7 @@ function Home() {
     getMovies();
   }, [debouncedQuery, page]);
 
-  // 🔥 Infinite scroll
+  // 🔄 Infinite scroll
   useEffect(() => {
     const handleScroll = () => {
       if (
@@ -76,14 +72,14 @@ function Home() {
     <div className={darkMode ? "app dark" : "app"}>
       <h1 className="title">🎬 Movie App</h1>
 
-      {/* 🌙 TOGGLE BUTTON */}
+      {/* 🌙 Toggle */}
       <div style={{ textAlign: "center", marginBottom: "20px" }}>
         <button onClick={() => setDarkMode((prev) => !prev)}>
           {darkMode ? "🌞 Light Mode" : "🌙 Dark Mode"}
         </button>
       </div>
 
-      {/* 🔍 SEARCH */}
+      {/* 🔍 Search */}
       <div style={{ textAlign: "center", marginBottom: "20px" }}>
         <input
           type="text"
@@ -97,7 +93,7 @@ function Home() {
         />
       </div>
 
-      {/* ⭐ FILTERS */}
+      {/* ⭐ Filters */}
       <div style={{ textAlign: "center", marginBottom: "20px" }}>
         <label style={{ marginRight: "10px" }}>Rating:</label>
 
@@ -124,7 +120,7 @@ function Home() {
         </select>
       </div>
 
-      {/* ⭐ WATCHLIST */}
+      {/* ⭐ Watchlist */}
       {watchlist.length > 0 && (
         <div style={{ margin: "20px" }}>
           <h2 style={{ marginLeft: "10px" }}>⭐ Your Watchlist</h2>
@@ -137,26 +133,38 @@ function Home() {
         </div>
       )}
 
-      {/* ⏳ LOADING */}
+      {/* ⏳ Loading */}
       {loading && <Loader />}
 
-      {/* ❌ ERROR */}
+      {/* ❌ Error */}
       {error && (
         <p style={{ color: "red", textAlign: "center" }}>
           ❌ {error}
         </p>
       )}
 
-      {/* 😕 EMPTY */}
+      {/* 😕 Empty */}
       {!loading && movies.length === 0 && (
         <p style={{ textAlign: "center" }}>
           😕 No movies found
         </p>
       )}
 
-      {/* 🎬 MOVIES */}
+      {/* 🎬 Movies with animation */}
       {!loading && (
-        <div className="movies-container">
+        <motion.div
+          className="movies-container"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: {},
+            visible: {
+              transition: {
+                staggerChildren: 0.1,
+              },
+            },
+          }}
+        >
           {movies
             .filter((movie) => {
               const ratingMatch = movie.vote_average >= rating;
@@ -169,7 +177,7 @@ function Home() {
             .map((movie) => (
               <MovieCard key={movie.id} movie={movie} />
             ))}
-        </div>
+        </motion.div>
       )}
     </div>
   );

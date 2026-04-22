@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchMovieDetails, fetchMovieTrailer } from "../services/movieService";
+import { motion } from "framer-motion";
 
 function MovieDetails() {
   const { id } = useParams();
@@ -27,31 +28,53 @@ function MovieDetails() {
     getMovie();
   }, [id]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p style={{ textAlign: "center" }}>Loading...</p>;
 
   return (
-    <div style={{ textAlign: "center", padding: "20px" }}>
+    <motion.div
+      style={{ textAlign: "center", padding: "20px" }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <h1>{movie.title}</h1>
 
-      <img
+      <motion.img
         src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
         alt={movie.title}
+        style={{ borderRadius: "12px", marginBottom: "15px" }}
+        initial={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.4 }}
       />
 
-      <p>{movie.overview}</p>
+      <p style={{ maxWidth: "600px", margin: "0 auto" }}>
+        {movie.overview}
+      </p>
 
       {trailerKey && (
-        <button onClick={() => setShowTrailer(true)}>
+        <button
+          style={{ marginTop: "15px" }}
+          onClick={() => setShowTrailer(true)}
+        >
           ▶️ Watch Trailer
         </button>
       )}
 
+      {/* 🎬 MODAL */}
       {showTrailer && trailerKey && (
-        <div className="modal" onClick={() => setShowTrailer(false)}>
-          <div
-             className="modal-content"
-             onClick={(e) => e.stopPropagation()}
-            >
+        <motion.div
+          className="modal"
+          onClick={() => setShowTrailer(false)}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <motion.div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+          >
             <span className="close" onClick={() => setShowTrailer(false)}>
               ❌
             </span>
@@ -63,10 +86,10 @@ function MovieDetails() {
               title="Trailer"
               allowFullScreen
             ></iframe>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }
 
