@@ -1,34 +1,31 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchMovieDetails, fetchMovieTrailer } from "../services/movieService";
 import { motion } from "framer-motion";
+import useFetch from "../hooks/useFetch";
+import { useState } from "react";
 
 function MovieDetails() {
   const { id } = useParams();
-  const [movie, setMovie] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [trailerKey, setTrailerKey] = useState<string | null>(null);
+
+  // ✅ useFetch for movie
+  const {
+    data: movie,
+    loading,
+    error,
+  } = useFetch(() => fetchMovieDetails(id!), [id]);
+
+  // ✅ useFetch for trailer
+  const { data: trailerKey } = useFetch(
+    () => fetchMovieTrailer(id!),
+    [id]
+  );
+
+  // UI state (still needed)
   const [showTrailer, setShowTrailer] = useState(false);
 
-  useEffect(() => {
-    const getMovie = async () => {
-      try {
-        const data = await fetchMovieDetails(id!);
-        setMovie(data);
-
-        const key = await fetchMovieTrailer(id!);
-        setTrailerKey(key);
-      } catch {
-        console.log("Error fetching movie");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getMovie();
-  }, [id]);
-
   if (loading) return <p style={{ textAlign: "center" }}>Loading...</p>;
+  if (error) return <p style={{ textAlign: "center" }}>❌ {error}</p>;
+  if (!movie) return null;
 
   return (
     <motion.div
