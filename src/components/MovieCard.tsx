@@ -3,6 +3,7 @@ import "./MovieCard.css";
 import { Link } from "react-router-dom";
 import { useWatchlist } from "../context/WatchlistContext";
 import { motion } from "framer-motion";
+import { memo } from "react";
 
 type Props = {
   movie: Movie;
@@ -45,4 +46,4 @@ function MovieCard({ movie }: Props) {
   );
 }
 
-export default MovieCard;
+export default memo(MovieCard);

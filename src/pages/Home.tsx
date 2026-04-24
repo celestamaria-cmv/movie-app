@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { fetchMovies } from "../services/movieService";
 import type { Movie } from "../types/movie";
 import MovieCard from "../components/MovieCard";
@@ -67,6 +67,17 @@ function Home() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // 🚀 PERFORMANCE: Memoized filtering
+  const filteredMovies = useMemo(() => {
+    return movies.filter((movie) => {
+      const ratingMatch = movie.vote_average >= rating;
+      const genreMatch =
+        genre === 0 || movie.genre_ids?.includes(genre);
+
+      return ratingMatch && genreMatch;
+    });
+  }, [movies, rating, genre]);
 
   return (
     <div className={darkMode ? "app dark" : "app"}>
@@ -165,18 +176,9 @@ function Home() {
             },
           }}
         >
-          {movies
-            .filter((movie) => {
-              const ratingMatch = movie.vote_average >= rating;
-              const genreMatch =
-                genre === 0 ||
-                movie.genre_ids?.includes(genre);
-
-              return ratingMatch && genreMatch;
-            })
-            .map((movie) => (
-              <MovieCard key={movie.id} movie={movie} />
-            ))}
+          {filteredMovies.map((movie) => (
+            <MovieCard key={movie.id} movie={movie} />
+          ))}
         </motion.div>
       )}
     </div>
